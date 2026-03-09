@@ -1,0 +1,83 @@
+{% extends 'menu/base.html' %}
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+
+<!-- Sticky Buttons -->
+<div class="position-fixed top-0 end-0 m-4 d-flex gap-2" style="z-index:999;">
+    <a href="{% url 'dish_list' %}" class="btn btn-light fw-bold shadow">Home</a>
+    <a href="{% url 'cart' %}" class="btn btn-light fw-bold shadow">
+        <i class="bi bi-cart3"></i> Cart
+    </a>
+</div>
+
+<div class="container mt-5">
+
+<h2 class="fw-bold mb-4">Your Cart</h2>
+
+{% if items %}
+<!-- სვეტების სათაურები -->
+<div class="row fw-bold border-bottom pb-2 mb-3">
+    <div class="col-6">Product</div>
+    <div class="col-2 text-center">Qty</div>
+    <div class="col-2 text-end">Price</div>
+    <div class="col-2 text-end">Total</div>
+</div>
+
+{% for item in items %}
+<hr>
+
+<div class="row align-items-center mb-3">
+    <!-- Product -->
+    <div class="col-6 d-flex align-items-center">
+        <a href="{% url 'remove_from_cart' item.dish.id %}" class="btn btn-danger btn-sm me-2">X</a>
+        <img src="{{ item.dish.image.url }}"
+             style="height:70px;width:70px;object-fit:cover;"
+             class="me-2">
+        <span>{{ item.dish.name }}</span>
+    </div>
+
+    <!-- Quantity -->
+    <div class="col-2 text-center">
+        <div class="d-flex justify-content-center align-items-center border rounded px-2">
+            <a href="{% url 'update_quantity' item.dish.id 'increase' %}"
+               class="btn btn-sm btn-outline-dark">+</a>
+            <span class="mx-2 fw-bold">{{ item.quantity }}</span>
+            <a href="{% url 'update_quantity' item.dish.id 'decrease' %}"
+               class="btn btn-sm btn-outline-dark">-</a>
+        </div>
+    </div>
+
+    <!-- Price -->
+    <div class="col-2 text-end">
+        {{ item.dish.price }} ₾
+    </div>
+
+    <!-- Total -->
+    <div class="col-2 text-end">
+        {{ item.subtotal }} ₾
+    </div>
+</div>
+
+{% endfor %}
+
+<hr>
+<h4 class="text-end fw-bold">Total: {{ total }} ₾</h4>
+
+<!-- Checkout Button -->
+    <div class="text-end mt-3">
+        <button class="btn btn-danger fw-bold px-4 py-2">
+            PROCEED TO CHECKOUT
+        </button>
+    </div>
+
+
+{% else %}
+<p>Your cart is empty.</p>
+{% endif %}
+
+</div>
+
+
+
+{% endblock %}

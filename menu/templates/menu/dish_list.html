@@ -1,0 +1,177 @@
+{% extends 'menu/base.html' %}
+{% block title %}Online Restaurant{% endblock %}
+
+{% block content %}
+
+<!-- Banner -->
+<div class="position-relative mb-4">
+    <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=1350&q=80"
+         class="img-fluid w-100"
+         style="height:300px; object-fit:cover;">
+
+    <div class="position-absolute top-50 start-50 translate-middle text-center">
+        <h1 class="text-white fw-bold">
+            Fast And Efficient, Online Ordering You Must Try
+        </h1>
+    </div>
+</div>
+
+<!-- Sticky Buttons -->
+<div class="position-fixed top-0 end-0 m-4 d-flex gap-2" style="z-index:999;">
+    <a href="{% url 'dish_list' %}" class="btn btn-light fw-bold shadow">Home</a>
+    <a href="{% url 'cart' %}" class="btn btn-light fw-bold shadow">
+        <i class="bi bi-cart3"></i> Cart
+    </a>
+</div>
+
+<!-- Categories -->
+<h2 class="text-center fw-bold">Categories</h2>
+
+<div class="d-flex justify-content-center mb-3 gap-2">
+    <a href="{% url 'dish_list' %}" class="btn btn-outline-dark category-btn">All</a>
+    {% for cat in categories %}
+        <a href="?category={{ cat.id }}" class="btn btn-outline-dark category-btn">
+            {{ cat.name }}
+        </a>
+    {% endfor %}
+</div>
+
+<hr class="border-danger border-2">
+
+<div class="container">
+<div class="row">
+
+    <!-- FILTER -->
+    <div class="col-md-3 d-flex justify-content-start">
+
+        <form method="get">
+
+        <div class="card p-3 shadow-sm"
+             style="background-color:#f8f5ee; width:260px;">
+
+            <h6 class="fw-bold d-flex justify-content-between">
+                Filter <i class="bi bi-funnel"></i>
+            </h6>
+
+            <hr class="my-2">
+
+            <!-- Spiciness -->
+            <div class="mb-2">
+                <div class="d-flex align-items-center">
+                    <label class="fw-bold me-2 mb-0" style="font-size:14px;">
+                        Spiciness:
+                    </label>
+
+                    <input type="range"
+                           min="-1"
+                           max="4"
+                           value="{{ request.GET.spicy|default:'-1' }}"
+                           id="spicyRange"
+                           class="form-range me-2">
+
+                    <span id="spicyValue" style="font-size:14px;">
+                        Not Chosen
+                    </span>
+                </div>
+
+                <input type="hidden" name="spicy" id="spicyHidden">
+            </div>
+
+            <!-- Checkboxes -->
+            <div class="form-check" style="font-size:14px;">
+                <input class="form-check-input" type="checkbox" name="no_nuts">
+                <label class="form-check-label">No Nuts</label>
+            </div>
+
+            <div class="form-check mb-2" style="font-size:14px;">
+                <input class="form-check-input" type="checkbox" name="vegetarian">
+                <label class="form-check-label">Vegetarian Only</label>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'dish_list' %}"
+                   class="btn btn-sm btn-danger px-3">
+                    Reset
+                </a>
+
+                <button type="submit"
+                        class="btn btn-sm btn-warning text-white px-3">
+                    Apply
+                </button>
+            </div>
+
+        </div>
+
+        </form>
+    </div>
+
+    <!-- DISHES -->
+    <div class="col-md-9">
+        <div class="row">
+            {% for dish in dishes %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm dish-hover">
+                    <img src="{{ dish.image.url }}"
+                         style="height:200px; object-fit:cover;">
+
+                    <div class="card-body">
+                        <h5 class="fw-bold">{{ dish.name }}</h5>
+
+                        <p>Spiciness: {{ dish.spicy_level }}</p>
+                        <p>Nuts: {% if dish.has_nuts %}Yes{% else %}No{% endif %}</p>
+                        <p>Vegetarian: {% if dish.is_vegetarian %}Yes{% else %}No{% endif %}</p>
+
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-bold">{{ dish.price }} ₾</span>
+                            <a href="{% url 'add_to_cart' dish.id %}"
+                               class="btn btn-primary btn-sm">
+                               Add to Cart
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+</div>
+
+<!-- JS -->
+<script>
+const slider = document.getElementById("spicyRange");
+const output = document.getElementById("spicyValue");
+const hiddenInput = document.getElementById("spicyHidden");
+
+function updateSpicy() {
+    if (slider.value == -1) {
+        output.innerHTML = "Not Chosen";
+        hiddenInput.value = "";
+    } else {
+        output.innerHTML = slider.value;
+        hiddenInput.value = slider.value;
+    }
+}
+
+slider.addEventListener("input", updateSpicy);
+
+// initialize on load
+updateSpicy();
+</script>
+
+<style>
+.category-btn:hover {
+    background-color:red;
+    color:white;
+}
+
+.dish-hover:hover {
+    transform:scale(1.03);
+    transition:0.3s;
+    box-shadow:0 0 15px rgba(0,0,0,0.3);
+}
+</style>
+
+{% endblock %}
